@@ -3,242 +3,876 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mnemex — AI-powered digital life management</title>
+    <title>mnemex — organize your digital life</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0d1117;
-            --fg: #c9d1d9;
-            --accent: #58a6ff;
-            --muted: #8b949e;
-            --surface: #161b22;
-            --border: #30363d;
+            --ink: #0e0c0a;
+            --parchment: #e2d5c3;
+            --gold: #c8a55a;
+            --gold-dim: #8a7340;
+            --gold-glow: #d4b96a;
+            --cream: #f0e8db;
+            --sage: #7a8c72;
+            --charcoal: #1a1815;
+            --smoke: #2a2520;
+            --ash: #6b6358;
+            --whisper: #4a443c;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
-                         Helvetica, Arial, sans-serif;
-            background: var(--bg);
-            color: var(--fg);
+            font-family: 'IBM Plex Mono', monospace;
+            background: var(--ink);
+            color: var(--parchment);
+            line-height: 1.7;
+            font-size: 14px;
+            font-weight: 300;
+            overflow-x: hidden;
+        }
+
+        /* === GRAIN OVERLAY === */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 256px;
+        }
+
+        /* === VIGNETTE === */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            pointer-events: none;
+            background: radial-gradient(
+                ellipse at center,
+                transparent 50%,
+                rgba(14, 12, 10, 0.6) 100%
+            );
+        }
+
+        /* === LAYOUT === */
+        .page {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        /* === SCROLL REVEAL === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === HEADER === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 4rem 0;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 560px;
+            border-radius: 2px;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            box-shadow:
+                0 0 80px rgba(200, 165, 90, 0.08),
+                0 0 1px rgba(200, 165, 90, 0.3);
+        }
+
+        .hero-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(4rem, 10vw, 7.5rem);
+            font-weight: 300;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            text-transform: lowercase;
+            opacity: 0;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+            line-height: 1;
+        }
+
+        .hero-sub {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--ash);
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+        }
+
+        .hero-rule {
+            width: 60px;
+            height: 1px;
+            background: var(--gold-dim);
+            border: none;
+            margin: 2.5rem auto;
+            opacity: 0;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+        }
+
+        .hero-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.35rem;
+            font-weight: 300;
+            font-style: italic;
+            color: var(--parchment);
+            max-width: 480px;
+            opacity: 0;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.1s forwards;
             line-height: 1.6;
         }
-        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
-        header {
-            text-align: center;
-            padding: 4rem 0 2rem;
-        }
-        .hero-img {
-            width: 100%;
-            max-width: 600px;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-        }
-        h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-        .tagline {
-            color: var(--muted);
-            font-size: 1.25rem;
-            margin-top: 0.5rem;
-        }
-        .cta {
+
+        .hero-cta {
             display: inline-block;
-            margin-top: 2rem;
-            padding: 0.75rem 2rem;
-            background: var(--accent);
-            color: var(--bg);
+            margin-top: 3rem;
+            padding: 0.8rem 2.5rem;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            transition: all 0.4s ease;
+            opacity: 0;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.3s forwards;
         }
-        .cta:hover { opacity: 0.9; }
-        section { margin: 3rem 0; }
+        .hero-cta:hover {
+            background: var(--gold);
+            color: var(--ink);
+            box-shadow: 0 0 30px rgba(200, 165, 90, 0.15);
+            text-decoration: none;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--whisper);
+            opacity: 0;
+            animation: fadeUp 1s ease 2s forwards, pulse 3s ease-in-out 3s infinite;
+        }
+
+        /* === SECTION DIVIDER === */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 6rem 0 4rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--whisper), transparent);
+        }
+        .divider-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--ash);
+            white-space: nowrap;
+        }
+
+        /* === SECTION HEADINGS === */
         h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--fg);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 300;
+            color: var(--cream);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.02em;
         }
-        .section-img {
-            width: 100%;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-bottom: 1.5rem;
+        .section-sub {
+            font-size: 0.75rem;
+            color: var(--ash);
+            letter-spacing: 0.15em;
+            margin-bottom: 2.5rem;
         }
-        .arch {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
-            font-family: 'SF Mono', 'Fira Code', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
+
+        /* === ARCHITECTURE TREE === */
+        .tree-container {
+            position: relative;
+            background: var(--charcoal);
+            border: 1px solid var(--smoke);
+            padding: 2.5rem 3rem;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        .tree-container::before {
+            content: 'ARCHITECTURE';
+            position: absolute;
+            top: 0.8rem;
+            right: 1rem;
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            color: var(--whisper);
+        }
+        .tree-line {
+            display: block;
             white-space: pre;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 2;
+            color: var(--parchment);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
         }
-        .features {
+        .tree-line.typed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .tree-line .tree-path {
+            color: var(--gold);
+        }
+        .tree-line .tree-comment {
+            color: var(--ash);
+        }
+
+        /* === PHILOSOPHY GRID === */
+        .phil-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
+            gap: 0;
+            border: 1px solid var(--smoke);
+            margin: 2rem 0;
         }
-        @media (max-width: 600px) {
-            .features { grid-template-columns: 1fr; }
-            h1 { font-size: 2.2rem; }
+        .phil-cell {
+            padding: 2rem 2.5rem;
+            border: 1px solid var(--smoke);
+            position: relative;
+            transition: background 0.4s ease;
         }
-        .feature {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.25rem;
+        .phil-cell:hover {
+            background: rgba(200, 165, 90, 0.03);
         }
-        .feature h3 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+        .phil-cell h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            color: var(--gold);
+            margin-bottom: 0.8rem;
         }
-        .feature p {
-            color: var(--muted);
-            font-size: 0.9rem;
+        .phil-cell p {
+            font-size: 0.8rem;
+            color: var(--ash);
+            line-height: 1.8;
         }
-        .setup {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
+        .phil-num {
+            position: absolute;
+            top: 1rem;
+            right: 1.2rem;
+            font-size: 0.55rem;
+            color: var(--whisper);
+            letter-spacing: 0.2em;
         }
-        .setup ol {
-            padding-left: 1.5rem;
-            color: var(--muted);
+
+        /* === IMAGE FRAMES === */
+        .frame {
+            position: relative;
+            margin: 3rem 0;
         }
-        .setup li { margin: 0.5rem 0; }
-        code {
-            background: var(--bg);
-            padding: 0.15rem 0.4rem;
-            border-radius: 4px;
+        .frame img {
+            width: 100%;
+            display: block;
+            border: 1px solid var(--smoke);
+        }
+        .frame-caption {
+            position: absolute;
+            bottom: -0.5rem;
+            right: 0;
+            font-size: 0.55rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--whisper);
+            background: var(--ink);
+            padding: 0.3rem 0.8rem;
+        }
+
+        /* === PATTERN SECTION === */
+        .pattern-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+        .pattern-text h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 400;
+            color: var(--cream);
+            margin-bottom: 1rem;
+        }
+        .pattern-text p {
+            font-size: 0.8rem;
+            color: var(--ash);
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+        .pattern-text .highlight {
+            color: var(--gold);
+            font-weight: 500;
+        }
+        .pattern-text .highlight-green {
+            color: var(--sage);
+            font-weight: 500;
+        }
+
+        /* === SKILLS === */
+        .skill-group {
+            margin-bottom: 2.5rem;
+        }
+        .skill-group-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            color: var(--gold-dim);
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--smoke);
+            margin-bottom: 0;
+        }
+        .skills-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+            margin: 0;
+        }
+        .skill-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--smoke);
+            border-right: 1px solid var(--smoke);
+            transition: background 0.3s ease;
+            position: relative;
+        }
+        .skill-item:nth-child(2n) { border-right: none; }
+        .skill-item:hover {
+            background: rgba(200, 165, 90, 0.03);
+        }
+        .skill-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2px;
+            height: 0;
+            background: var(--gold);
+            transition: height 0.3s ease;
+        }
+        .skill-item:hover::before { height: 60%; }
+        .skill-cmd {
             font-size: 0.85rem;
+            color: var(--gold);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
         }
+        .skill-desc {
+            font-size: 0.75rem;
+            color: var(--ash);
+            line-height: 1.7;
+        }
+        .skill-cmd .agent-tag {
+            font-size: 0.55rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--sage);
+            font-weight: 400;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+        }
+
+        /* === GETTING STARTED === */
+        .steps {
+            counter-reset: step;
+            margin: 2rem 0;
+        }
+        .step {
+            counter-increment: step;
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--smoke);
+            align-items: baseline;
+        }
+        .step::before {
+            content: counter(step, decimal-leading-zero);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--gold-dim);
+            min-width: 50px;
+        }
+        .step-content {
+            font-size: 0.85rem;
+            color: var(--parchment);
+            line-height: 1.8;
+        }
+        .step-content code {
+            background: var(--charcoal);
+            padding: 0.2rem 0.6rem;
+            font-size: 0.78rem;
+            color: var(--gold);
+            border: 1px solid var(--smoke);
+        }
+        .step-content a {
+            color: var(--gold);
+            border-bottom: 1px solid var(--gold-dim);
+            text-decoration: none;
+            transition: border-color 0.3s;
+        }
+        .step-content a:hover {
+            border-color: var(--gold);
+            text-decoration: none;
+        }
+
+        /* === FOOTER === */
         footer {
+            padding: 5rem 0 3rem;
             text-align: center;
-            padding: 3rem 0 2rem;
-            color: var(--muted);
-            font-size: 0.85rem;
         }
-        a { color: var(--accent); text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        .footer-mark {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: var(--whisper);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+        .footer-links {
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--whisper);
+        }
+        .footer-links a {
+            color: var(--ash);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        .footer-links a:hover {
+            color: var(--gold);
+            border-color: var(--gold-dim);
+        }
+
+        /* === ANIMATIONS === */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 700px) {
+            .phil-grid { grid-template-columns: 1fr; }
+            .pattern-layout { grid-template-columns: 1fr; }
+            .skills-list { grid-template-columns: 1fr; }
+            .skill-item { border-right: none !important; }
+            .tree-container { padding: 1.5rem; }
+            .tree-line { font-size: 0.72rem; }
+            .page { padding: 0 1.2rem; }
+            .skill-group { margin-bottom: 2rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <img src="images/hero.png" alt="mnemex — organized digital life"
-                 class="hero-img">
-            <h1>mnemex</h1>
-            <p class="tagline">AI-powered digital life management
-            framework for Claude Code</p>
-            <a class="cta" href="https://github.com/open-mnemex/core">
-                View on GitHub
-            </a>
-        </header>
 
-        <section>
-            <h2>Architecture</h2>
-            <div class="arch">~/Documents
-├── 00_Vault/       # Immutable facts (IDs, receipts, contracts)
-├── 10_Projects/    # Active work with deadlines
-├── 20_Areas/       # Capabilities & systems you maintain
-├── 30_Resources/   # External collected materials
-├── 99_Archives/    # Completed projects (cold storage)
-└── __To_Review/    # Staging area (safe landing zone)</div>
-        </section>
+<div class="page">
 
-        <section>
-            <h2>Philosophy</h2>
-            <img src="images/flow.png"
-                 alt="File lifecycle: Downloads to Projects to Vault and Archives"
-                 class="section-img">
-            <div class="features">
-                <div class="feature">
-                    <h3>Fact vs Fiction</h3>
-                    <p>Facts (Vault) are immutable. Creations (Projects)
-                    are volatile. Separate evidence from work-in-progress.</p>
-                </div>
-                <div class="feature">
-                    <h3>Capability vs Collection</h3>
-                    <p>Areas are skills you maintain. Resources are things
-                    you've gathered. Know the difference.</p>
-                </div>
-                <div class="feature">
-                    <h3>Flow</h3>
-                    <p>Downloads &rarr; Projects &rarr; Vault &rarr;
-                    Archives. Every file has a lifecycle.</p>
-                </div>
-                <div class="feature">
-                    <h3>CLAUDE.md / README.md</h3>
-                    <p>Framework rules in CLAUDE.md (shared). Personal
-                    data in README.md (private). Clone and customize.</p>
-                </div>
-            </div>
-        </section>
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+        <img src="images/hero.png"
+             alt="mnemex — a tree of organized knowledge"
+             class="hero-image">
+        <h1 class="hero-title">mnemex</h1>
+        <p class="hero-sub">Digital Life Management Framework</p>
+        <hr class="hero-rule">
+        <p class="hero-tagline">
+            An AI-powered architecture that turns ~/Documents into
+            a structured, navigable memory &mdash; with Claude Code
+            as your intelligent archivist.
+        </p>
+        <a class="hero-cta" href="https://github.com/open-mnemex/core">
+            View on GitHub
+        </a>
+        <span class="scroll-hint">scroll</span>
+    </section>
 
-        <section>
-            <h2>The Pattern</h2>
-            <img src="images/pattern.png"
-                 alt="CLAUDE.md (shared rules) vs README.md (personal data)"
-                 class="section-img">
-            <p style="color: var(--muted); font-size: 0.95rem;">
-                <strong style="color: var(--fg);">CLAUDE.md</strong>
-                files define the rules &mdash; naming conventions,
-                protocols, and structure. They're tracked in git and
-                shared with everyone.
-                <strong style="color: var(--fg);">README.md</strong>
-                files hold your personal data &mdash; entity names,
-                project inventories, filing logs. They're gitignored
-                so the system stays private.
-            </p>
-        </section>
-
-        <section>
-            <h2>Skills</h2>
-            <div class="features">
-                <div class="feature">
-                    <h3>/process-inbox</h3>
-                    <p>Route files from Downloads into the system with
-                    VNS naming.</p>
-                </div>
-                <div class="feature">
-                    <h3>/capture</h3>
-                    <p>Quick-capture quotes, books, articles, tools,
-                    and more.</p>
-                </div>
-                <div class="feature">
-                    <h3>/project</h3>
-                    <p>Init, archive, reorganize, and link projects.</p>
-                </div>
-                <div class="feature">
-                    <h3>/pdf</h3>
-                    <p>Extract, create, merge, split, and fill PDF
-                    forms.</p>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2>Getting Started</h2>
-            <div class="setup">
-                <ol>
-                    <li>Install <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a></li>
-                    <li>Clone: <code>git clone https://github.com/open-mnemex/core.git ~/Documents</code></li>
-                    <li>Copy each <code>README.example.md</code> to
-                    <code>README.md</code> and fill in your data</li>
-                    <li>Run <code>/process-inbox</code> to start filing</li>
-                </ol>
-            </div>
-        </section>
-
-        <footer>
-            <p>MIT License &middot;
-            <a href="https://github.com/open-mnemex/core">GitHub</a>
-            </p>
-        </footer>
+    <!-- ===== ARCHITECTURE ===== -->
+    <div class="divider reveal">
+        <span class="divider-label">I &mdash; Structure</span>
     </div>
+
+    <section class="reveal">
+        <h2>The Architecture</h2>
+        <p class="section-sub">Five domains. One system of truth.</p>
+        <div class="tree-container" id="tree">
+            <span class="tree-line" data-delay="0"><span class="tree-path">~/Documents</span></span>
+            <span class="tree-line" data-delay="80">├── <span class="tree-path">00_Vault/</span>       <span class="tree-comment"># Immutable facts</span></span>
+            <span class="tree-line" data-delay="160">├── <span class="tree-path">10_Projects/</span>    <span class="tree-comment"># Active work with deadlines</span></span>
+            <span class="tree-line" data-delay="240">├── <span class="tree-path">20_Areas/</span>       <span class="tree-comment"># Capabilities you maintain</span></span>
+            <span class="tree-line" data-delay="320">├── <span class="tree-path">30_Resources/</span>   <span class="tree-comment"># External collected materials</span></span>
+            <span class="tree-line" data-delay="400">├── <span class="tree-path">99_Archives/</span>    <span class="tree-comment"># Completed projects</span></span>
+            <span class="tree-line" data-delay="480">└── <span class="tree-path">__To_Review/</span>    <span class="tree-comment"># Safe staging area</span></span>
+        </div>
+    </section>
+
+    <!-- ===== PHILOSOPHY ===== -->
+    <div class="divider reveal">
+        <span class="divider-label">II &mdash; Philosophy</span>
+    </div>
+
+    <section class="reveal">
+        <h2>Three Principles</h2>
+        <p class="section-sub">The thinking behind the structure.</p>
+
+        <div class="frame reveal">
+            <img src="images/flow.png"
+                 alt="File lifecycle: Downloads to Vault and Archives">
+            <span class="frame-caption">Fig. 1 &mdash; File Lifecycle</span>
+        </div>
+
+        <div class="phil-grid reveal">
+            <div class="phil-cell">
+                <span class="phil-num">01</span>
+                <h3>Fact vs Fiction</h3>
+                <p>Facts are immutable. A tax return, once filed,
+                never changes. Creations are volatile. Drafts evolve
+                until they ship.</p>
+            </div>
+            <div class="phil-cell">
+                <span class="phil-num">02</span>
+                <h3>Capability vs Collection</h3>
+                <p>Areas are skills you possess and systems you
+                actively maintain. Resources are external materials
+                you've gathered.</p>
+            </div>
+            <div class="phil-cell">
+                <span class="phil-num">03</span>
+                <h3>Flow</h3>
+                <p>Files enter via Downloads. Active work happens
+                in Projects. Final artifacts move to Vault. Dead
+                projects move to Archives.</p>
+            </div>
+            <div class="phil-cell">
+                <span class="phil-num">04</span>
+                <h3>No Deletion</h3>
+                <p>Files are never deleted. They are moved to Trash,
+                archived, or frozen. Every artifact has a history.
+                Nothing is lost.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== THE PATTERN ===== -->
+    <div class="divider reveal">
+        <span class="divider-label">III &mdash; The Pattern</span>
+    </div>
+
+    <section class="reveal">
+        <h2>CLAUDE.md / README.md</h2>
+        <p class="section-sub">The core design pattern of mnemex.</p>
+
+        <div class="pattern-layout">
+            <div class="frame">
+                <img src="images/pattern.png"
+                     alt="Shared rules vs personal data">
+                <span class="frame-caption">Fig. 2 &mdash; Dual File Pattern</span>
+            </div>
+            <div class="pattern-text">
+                <h3>Shared rules. Private data.</h3>
+                <p>
+                    <span class="highlight">CLAUDE.md</span> files define
+                    the framework &mdash; naming conventions, protocols,
+                    filing rules. They're tracked in git and shared
+                    with everyone who clones the repo.
+                </p>
+                <p>
+                    <span class="highlight-green">README.md</span> files
+                    hold your personal context &mdash; entity names,
+                    project inventories, filing logs. They're gitignored,
+                    keeping your data private.
+                </p>
+                <p>
+                    Clone the repo. Copy each
+                    <span class="highlight">README.example.md</span>
+                    to README.md. Fill in your life.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SKILLS ===== -->
+    <div class="divider reveal">
+        <span class="divider-label">IV &mdash; Skills</span>
+    </div>
+
+    <section class="reveal">
+        <h2>Claude Code Commands</h2>
+        <p class="section-sub">Voice commands for your digital archivist.</p>
+
+        <!-- Document Management -->
+        <div class="skill-group">
+            <div class="skill-group-label">Document Management</div>
+            <div class="skills-list">
+                <div class="skill-item">
+                    <div class="skill-cmd">/process-inbox</div>
+                    <div class="skill-desc">Route files from ~/Downloads
+                    into the system with VNS naming conventions.
+                    Auto-detects file type and suggests the correct domain.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/capture</div>
+                    <div class="skill-desc">Quick-capture quotes, books,
+                    articles, tools, letters, and any content worth
+                    keeping into Resources.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/pdf</div>
+                    <div class="skill-desc">Full PDF toolkit: extract text
+                    and tables, create new PDFs, merge, split, and fill
+                    forms programmatically.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/nano-banana-pro</div>
+                    <div class="skill-desc">Generate and edit images
+                    using Gemini's multimodal model. Supports up to
+                    14 input images for composition.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Lifecycle -->
+        <div class="skill-group">
+            <div class="skill-group-label">Project Lifecycle</div>
+            <div class="skills-list">
+                <div class="skill-item">
+                    <div class="skill-cmd">/project init</div>
+                    <div class="skill-desc">Create a new project with
+                    the standard skeleton, control plan, and folder
+                    structure.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/project archive</div>
+                    <div class="skill-desc">Archive a completed project
+                    using the 3R Protocol: Refine, Reduce, Record.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/project reorg</div>
+                    <div class="skill-desc">Reorganize a project's internal
+                    structure when scope changes or files accumulate.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/project link</div>
+                    <div class="skill-desc">Create symlinks between Vault
+                    evidence files and active project folders.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- macOS Automation -->
+        <div class="skill-group">
+            <div class="skill-group-label">macOS Automation</div>
+            <div class="skills-list">
+                <div class="skill-item">
+                    <div class="skill-cmd">/mail-automation</div>
+                    <div class="skill-desc">Read, send, search, and organize
+                    email in Apple Mail. Download attachments, flag, and
+                    archive messages.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/calendar-automation</div>
+                    <div class="skill-desc">Create, update, and query events
+                    in Apple Calendar. Set alarms, manage recurring events,
+                    block time.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/reminders-automation</div>
+                    <div class="skill-desc">Create tasks, set due dates,
+                    manage lists, and mark items complete in Apple
+                    Reminders.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">/safari-automation</div>
+                    <div class="skill-desc">Open URLs, manage tabs, extract
+                    page content, execute JavaScript, and save to reading
+                    list.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Browser Automation -->
+        <div class="skill-group">
+            <div class="skill-group-label">Browser DevTools</div>
+            <div class="skills-list" style="grid-template-columns: 1fr;">
+                <div class="skill-item" style="border-right: none;">
+                    <div class="skill-cmd">/chrome-devtools</div>
+                    <div class="skill-desc">Control Chrome via DevTools
+                    protocol. Navigate, click, fill forms, take screenshots,
+                    inspect network requests, and run performance traces.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Agents -->
+        <div class="skill-group">
+            <div class="skill-group-label">AI Agents</div>
+            <div class="skills-list">
+                <div class="skill-item">
+                    <div class="skill-cmd">pdf-analyzer <span class="agent-tag">agent</span></div>
+                    <div class="skill-desc">Reads and analyzes PDF content
+                    to determine the correct Vault filing location and
+                    naming.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">pdf-renamer <span class="agent-tag">agent</span></div>
+                    <div class="skill-desc">Renames PDFs to follow VNS
+                    naming conventions based on document content analysis.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">chinese-translator <span class="agent-tag">agent</span></div>
+                    <div class="skill-desc">Translates between English and
+                    Chinese with verification, optimized for legal and
+                    formal documents.</div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-cmd">code-improvement-reviewer <span class="agent-tag">agent</span></div>
+                    <div class="skill-desc">Reviews code for improvements,
+                    focusing on architecture, maintainability, and best
+                    practices.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== GETTING STARTED ===== -->
+    <div class="divider reveal">
+        <span class="divider-label">V &mdash; Begin</span>
+    </div>
+
+    <section class="reveal">
+        <h2>Getting Started</h2>
+        <p class="section-sub">Four steps to an organized life.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-content">
+                    Install <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a>,
+                    Anthropic's CLI for working with Claude.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    Clone the framework:<br>
+                    <code>git clone https://github.com/open-mnemex/core.git ~/Documents</code>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    Copy each <code>README.example.md</code> to
+                    <code>README.md</code> in the same folder.
+                    Fill in your personal data: entity names, project
+                    lists, area inventories.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-content">
+                    Run <code>/process-inbox</code> to start filing
+                    documents from your Downloads folder.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-mark">m</div>
+        <div class="footer-links">
+            <a href="https://github.com/open-mnemex/core">GitHub</a>
+            &nbsp;&middot;&nbsp;
+            MIT License
+            &nbsp;&middot;&nbsp;
+            2026
+        </div>
+    </footer>
+
+</div>
+
+<script>
+/* Scroll reveal */
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+/* Tree typewriter */
+const tree = document.getElementById('tree');
+const treeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const lines = tree.querySelectorAll('.tree-line');
+            lines.forEach(line => {
+                const delay = parseInt(line.dataset.delay) || 0;
+                setTimeout(() => line.classList.add('typed'), delay + 200);
+            });
+            treeObserver.unobserve(tree);
+        }
+    });
+}, { threshold: 0.3 });
+treeObserver.observe(tree);
+
+/* Hide scroll hint on scroll */
+const hint = document.querySelector('.scroll-hint');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 100 && hint) {
+        hint.style.opacity = '0';
+        hint.style.transition = 'opacity 0.5s';
+    }
+}, { passive: true });
+</script>
+
 </body>
 </html>
