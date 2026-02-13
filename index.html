@@ -26,6 +26,12 @@
             text-align: center;
             padding: 4rem 0 2rem;
         }
+        .hero-img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
         h1 {
             font-size: 3rem;
             font-weight: 700;
@@ -54,6 +60,12 @@
             margin-bottom: 1rem;
             color: var(--fg);
         }
+        .section-img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
         .arch {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -71,6 +83,7 @@
         }
         @media (max-width: 600px) {
             .features { grid-template-columns: 1fr; }
+            h1 { font-size: 2.2rem; }
         }
         .feature {
             background: var(--surface);
@@ -116,6 +129,8 @@
 <body>
     <div class="container">
         <header>
+            <img src="images/hero.png" alt="mnemex — organized digital life"
+                 class="hero-img">
             <h1>mnemex</h1>
             <p class="tagline">AI-powered digital life management
             framework for Claude Code</p>
@@ -137,6 +152,9 @@
 
         <section>
             <h2>Philosophy</h2>
+            <img src="images/flow.png"
+                 alt="File lifecycle: Downloads to Projects to Vault and Archives"
+                 class="section-img">
             <div class="features">
                 <div class="feature">
                     <h3>Fact vs Fiction</h3>
@@ -159,6 +177,23 @@
                     data in README.md (private). Clone and customize.</p>
                 </div>
             </div>
+        </section>
+
+        <section>
+            <h2>The Pattern</h2>
+            <img src="images/pattern.png"
+                 alt="CLAUDE.md (shared rules) vs README.md (personal data)"
+                 class="section-img">
+            <p style="color: var(--muted); font-size: 0.95rem;">
+                <strong style="color: var(--fg);">CLAUDE.md</strong>
+                files define the rules &mdash; naming conventions,
+                protocols, and structure. They're tracked in git and
+                shared with everyone.
+                <strong style="color: var(--fg);">README.md</strong>
+                files hold your personal data &mdash; entity names,
+                project inventories, filing logs. They're gitignored
+                so the system stays private.
+            </p>
         </section>
 
         <section>
