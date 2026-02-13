@@ -151,9 +151,25 @@
             line-height: 1.6;
         }
 
+        .hero-etymology {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: var(--ash);
+            margin-top: 2rem;
+            opacity: 0;
+            animation: fadeUp 1s cubic-bezier(0.16, 1, 0.3, 1) 1.25s forwards;
+            line-height: 1.8;
+            max-width: 420px;
+        }
+        .hero-etymology .etym-word {
+            color: var(--gold-dim);
+            font-style: italic;
+        }
+
         .hero-cta {
             display: inline-block;
-            margin-top: 3rem;
+            margin-top: 2.5rem;
             padding: 0.8rem 2.5rem;
             border: 1px solid var(--gold-dim);
             color: var(--gold);
@@ -528,6 +544,14 @@
             An AI-powered architecture that turns ~/Documents into
             a structured, navigable memory &mdash; with Claude Code
             as your intelligent archivist.
+        </p>
+        <p class="hero-etymology">
+            From Greek <span class="etym-word">mn&#275;m&#275;</span>
+            (&#956;&#957;&#942;&#956;&#951;, memory) +
+            Vannevar Bush's
+            <span class="etym-word">Memex</span> (1945) &mdash;
+            the original vision of a machine that extends
+            human memory.
         </p>
         <a class="hero-cta" href="https://github.com/open-mnemex/core">
             View on GitHub
