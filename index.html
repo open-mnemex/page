@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mnemex — AI-powered digital life management</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --fg: #c9d1d9;
+            --accent: #58a6ff;
+            --muted: #8b949e;
+            --surface: #161b22;
+            --border: #30363d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                         Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+        }
+        .container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        header {
+            text-align: center;
+            padding: 4rem 0 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .tagline {
+            color: var(--muted);
+            font-size: 1.25rem;
+            margin-top: 0.5rem;
+        }
+        .cta {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 2rem;
+            background: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .cta:hover { opacity: 0.9; }
+        section { margin: 3rem 0; }
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--fg);
+        }
+        .arch {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .features { grid-template-columns: 1fr; }
+        }
+        .feature {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+        .feature h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .feature p {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        .setup {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        .setup ol {
+            padding-left: 1.5rem;
+            color: var(--muted);
+        }
+        .setup li { margin: 0.5rem 0; }
+        code {
+            background: var(--bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        footer {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>mnemex</h1>
+            <p class="tagline">AI-powered digital life management
+            framework for Claude Code</p>
+            <a class="cta" href="https://github.com/TINKPA/mnemex-core">
+                View on GitHub
+            </a>
+        </header>
+
+        <section>
+            <h2>Architecture</h2>
+            <div class="arch">~/Documents
+├── 00_Vault/       # Immutable facts (IDs, receipts, contracts)
+├── 10_Projects/    # Active work with deadlines
+├── 20_Areas/       # Capabilities & systems you maintain
+├── 30_Resources/   # External collected materials
+├── 99_Archives/    # Completed projects (cold storage)
+└── __To_Review/    # Staging area (safe landing zone)</div>
+        </section>
+
+        <section>
+            <h2>Philosophy</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>Fact vs Fiction</h3>
+                    <p>Facts (Vault) are immutable. Creations (Projects)
+                    are volatile. Separate evidence from work-in-progress.</p>
+                </div>
+                <div class="feature">
+                    <h3>Capability vs Collection</h3>
+                    <p>Areas are skills you maintain. Resources are things
+                    you've gathered. Know the difference.</p>
+                </div>
+                <div class="feature">
+                    <h3>Flow</h3>
+                    <p>Downloads &rarr; Projects &rarr; Vault &rarr;
+                    Archives. Every file has a lifecycle.</p>
+                </div>
+                <div class="feature">
+                    <h3>CLAUDE.md / README.md</h3>
+                    <p>Framework rules in CLAUDE.md (shared). Personal
+                    data in README.md (private). Clone and customize.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Skills</h2>
+            <div class="features">
+                <div class="feature">
+                    <h3>/process-inbox</h3>
+                    <p>Route files from Downloads into the system with
+                    VNS naming.</p>
+                </div>
+                <div class="feature">
+                    <h3>/capture</h3>
+                    <p>Quick-capture quotes, books, articles, tools,
+                    and more.</p>
+                </div>
+                <div class="feature">
+                    <h3>/project</h3>
+                    <p>Init, archive, reorganize, and link projects.</p>
+                </div>
+                <div class="feature">
+                    <h3>/pdf</h3>
+                    <p>Extract, create, merge, split, and fill PDF
+                    forms.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Getting Started</h2>
+            <div class="setup">
+                <ol>
+                    <li>Install <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a></li>
+                    <li>Clone: <code>git clone https://github.com/TINKPA/mnemex-core.git ~/Documents</code></li>
+                    <li>Copy each <code>README.example.md</code> to
+                    <code>README.md</code> and fill in your data</li>
+                    <li>Run <code>/process-inbox</code> to start filing</li>
+                </ol>
+            </div>
+        </section>
+
+        <footer>
+            <p>MIT License &middot;
+            <a href="https://github.com/TINKPA/mnemex-core">GitHub</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
