@@ -431,6 +431,53 @@
             vertical-align: middle;
         }
 
+        /* === INSTALL BUTTON === */
+        .skill-group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--smoke);
+            margin-bottom: 0;
+        }
+        .skill-group-header .skill-group-label {
+            padding: 0;
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .install-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--smoke);
+            background: transparent;
+            color: var(--ash);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.6rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .install-btn:hover {
+            border-color: var(--gold-dim);
+            color: var(--gold);
+        }
+        .install-btn.copied {
+            border-color: var(--sage);
+            color: var(--sage);
+        }
+        .install-btn svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
         /* === GETTING STARTED === */
         .steps {
             counter-reset: step;
@@ -674,7 +721,13 @@
 
         <!-- Document Management -->
         <div class="skill-group">
-            <div class="skill-group-label">Document Management</div>
+            <div class="skill-group-header">
+                <div class="skill-group-label">Document Management</div>
+                <button class="install-btn" data-cmd="claude plugin marketplace add open-mnemex/mnemex-plugins && claude plugin install mnemex-core@mnemex" onclick="copyInstall(this)">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    install
+                </button>
+            </div>
             <div class="skills-list">
                 <div class="skill-item">
                     <div class="skill-cmd">/process-inbox</div>
@@ -705,7 +758,13 @@
 
         <!-- Project Lifecycle -->
         <div class="skill-group">
-            <div class="skill-group-label">Project Lifecycle</div>
+            <div class="skill-group-header">
+                <div class="skill-group-label">Project Lifecycle</div>
+                <button class="install-btn" data-cmd="claude plugin marketplace add open-mnemex/mnemex-plugins && claude plugin install mnemex-core@mnemex" onclick="copyInstall(this)">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    install
+                </button>
+            </div>
             <div class="skills-list">
                 <div class="skill-item">
                     <div class="skill-cmd">/project init</div>
@@ -733,7 +792,13 @@
 
         <!-- macOS Automation -->
         <div class="skill-group">
-            <div class="skill-group-label">macOS Automation</div>
+            <div class="skill-group-header">
+                <div class="skill-group-label">macOS Automation</div>
+                <button class="install-btn" data-cmd="claude plugin marketplace add open-mnemex/mnemex-plugins && claude plugin install macos-automation@mnemex" onclick="copyInstall(this)">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    install
+                </button>
+            </div>
             <div class="skills-list">
                 <div class="skill-item">
                     <div class="skill-cmd">/mail-automation</div>
@@ -788,7 +853,13 @@
 
         <!-- AI Agents -->
         <div class="skill-group">
-            <div class="skill-group-label">AI Agents</div>
+            <div class="skill-group-header">
+                <div class="skill-group-label">AI Agents</div>
+                <button class="install-btn" data-cmd="claude plugin marketplace add open-mnemex/mnemex-plugins && claude plugin install dev-tools@mnemex" onclick="copyInstall(this)">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                    install
+                </button>
+            </div>
             <div class="skills-list">
                 <div class="skill-item">
                     <div class="skill-cmd">pdf-analyzer <span class="agent-tag">agent</span></div>
@@ -907,6 +978,20 @@ window.addEventListener('scroll', () => {
         hint.style.transition = 'opacity 0.5s';
     }
 }, { passive: true });
+
+/* Copy install command */
+function copyInstall(btn) {
+    const cmd = btn.getAttribute('data-cmd');
+    navigator.clipboard.writeText(cmd).then(() => {
+        const orig = btn.innerHTML;
+        btn.classList.add('copied');
+        btn.innerHTML = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> copied';
+        setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = orig;
+        }, 2000);
+    });
+}
 </script>
 
 </body>
